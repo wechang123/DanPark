@@ -32,4 +32,15 @@ public class Settings {
     public Settings(User user){
         this.user = user;
     }
+
+    public void updateSettings(String parkingSort, Boolean congestionAlert, Boolean availableAlert, Boolean autoLaunch,
+                               String theme, String fontSize, String language) {
+        this.parkingSort = parkingSort;
+        this.congestionAlert = congestionAlert;
+        this.availableAlert = availableAlert;
+        this.autoLaunch = autoLaunch;
+        this.theme = theme;
+        this.fontSize = fontSize;
+        this.language = language;
+    }
 }
