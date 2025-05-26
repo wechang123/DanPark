@@ -1,6 +1,6 @@
 package DanParking.security.service;
 
-import DanParking.domain.User;
+import DanParking.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 

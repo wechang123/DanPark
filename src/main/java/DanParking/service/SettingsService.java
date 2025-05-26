@@ -1,7 +1,7 @@
 package DanParking.service;
 
-import DanParking.domain.Settings;
-import DanParking.domain.User;
+import DanParking.entity.Settings;
+import DanParking.entity.User;
 import DanParking.dto.request.SettingsUpdateDTO;
 import DanParking.dto.response.SettingsResponseDTO;
 import DanParking.repository.SettingsJpaRepository;

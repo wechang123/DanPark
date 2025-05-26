@@ -1,7 +1,7 @@
 package DanParking.service;
 
-import DanParking.domain.RefreshToken;
-import DanParking.domain.User;
+import DanParking.entity.RefreshToken;
+import DanParking.entity.User;
 import DanParking.dto.request.LoginRequestDTO;
 import DanParking.dto.response.TokenResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;

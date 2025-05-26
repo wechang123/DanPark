@@ -1,6 +1,6 @@
 package DanParking.dto.response;
 
-import DanParking.domain.Settings;
+import DanParking.entity.Settings;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

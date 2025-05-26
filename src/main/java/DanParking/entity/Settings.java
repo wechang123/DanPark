@@ -1,4 +1,4 @@
-package DanParking.domain;
+package DanParking.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

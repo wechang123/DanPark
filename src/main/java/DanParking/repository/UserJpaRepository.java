@@ -1,6 +1,6 @@
 package DanParking.repository;
 
-import DanParking.domain.User;
+import DanParking.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

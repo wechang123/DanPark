@@ -1,7 +1,7 @@
 package DanParking.repository;
 
-import DanParking.domain.RefreshToken;
-import DanParking.domain.User;
+import DanParking.entity.RefreshToken;
+import DanParking.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
