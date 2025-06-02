@@ -2,38 +2,36 @@ package DanParking.security.service;
 
 import DanParking.entity.User;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.List;
 
 public class CustomUserDetails implements UserDetails {
-    private final Long userId;
-    private final String email;
-    private final String password;
+    private final User user;
 
     public CustomUserDetails(User user){
-        this.userId = user.getId();
-        this.email = user.getEmail();
-        this.password = user.getPassword();
+        this.user = user;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return List.of(new SimpleGrantedAuthority(user.getRole().name()));
     }
 
     public Long getUserId(){
-        return userId;
+        return user.getId();
     }
 
     @Override
     public String getPassword() {
-        return password;
+        return user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return email;
+        return user.getEmail();
     }
 
     @Override

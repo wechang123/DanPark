@@ -5,6 +5,6 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class FavoriteSlotRequestDTO {
-    private Long slotId;
+public class FavoriteParkingLotCreateDTO {
+    private Long parkingLotId;
 }

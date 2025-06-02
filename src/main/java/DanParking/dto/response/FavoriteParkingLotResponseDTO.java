@@ -5,10 +5,11 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class FavoriteSlotResponseDTO {
+public class FavoriteParkingLotResponseDTO {
     private Long id;
-    private Long slotId;
     private Long parkingLotId;
-    private Long slotNumber;
-    private Boolean isAvailable;
+    private String name;
+    private String location;
+    private Long totalSlots;
+    private Long availableSlots;
 }

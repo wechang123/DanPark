@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -22,6 +23,9 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
     @Column(nullable = false)
     private final LocalDateTime createdAt = LocalDateTime.now();
 
@@ -29,11 +33,15 @@ public class User {
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     private Settings settings;
 
+    @OneToMany(mappedBy = "user")
+    private List<FavoriteParkingLot> favoriteParkingLotList;
+
     @Builder
-    public User(String name, String email, String password){
+    public User(String name, String email, String password, Role role){
         this.name = name;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
     public void updateUserInfo(String name, String password){

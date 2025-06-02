@@ -1,5 +1,6 @@
 package DanParking.service;
 
+import DanParking.entity.Role;
 import DanParking.entity.Settings;
 import DanParking.entity.User;
 import DanParking.dto.request.UserCreateDTO;
@@ -32,7 +33,8 @@ public class UserService {
         User user = new User(
                 userCreateDTO.getName(),
                 userCreateDTO.getEmail(),
-                passwordEncoder.encode(userCreateDTO.getPassword())
+                passwordEncoder.encode(userCreateDTO.getPassword()),
+                Role.ROLE_USER
         );
         Settings settings = new Settings(user);
         user.setSettings(settings);
