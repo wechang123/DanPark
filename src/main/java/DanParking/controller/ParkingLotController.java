@@ -5,6 +5,7 @@ import DanParking.dto.response.ApiResponseDTO;
 import DanParking.dto.response.ParkingLotResponseDTO;
 import DanParking.service.ParkingLotService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +18,7 @@ public class ParkingLotController {
     @Autowired
     private ParkingLotService parkingLotService;
 
+    @PreAuthorize("hasRole('YOLO')")
     @PostMapping("/parking-lots/init")
     public ApiResponseDTO<List<ParkingLotResponseDTO>> initializeParkingLots(@RequestBody ParkingLotsInitDTO parkingLotsInitDTO){
         return ApiResponseDTO.success(parkingLotService.saveParkingLots(parkingLotsInitDTO));
