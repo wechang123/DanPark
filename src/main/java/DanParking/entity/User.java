@@ -36,6 +36,9 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<FavoriteParkingLot> favoriteParkingLotList;
 
+    @OneToMany(mappedBy = "user")
+    private List<ParkingHistory> parkingHistoryList;
+
     @Builder
     public User(String name, String email, String password, Role role){
         this.name = name;
