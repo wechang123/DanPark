@@ -6,7 +6,7 @@
         </encoder>
     </appender>
     <appender name="ROLLING_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>/home/ubuntu/app.log</file>
+        <file>./app.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- 날짜별 + 용량별 분할 -->
             <fileNamePattern>app-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
