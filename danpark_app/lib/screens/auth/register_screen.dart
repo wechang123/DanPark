@@ -1,18 +1,20 @@
+# 회원가입 화면 구현 - 이메일, 비밀번호, 이름, 전화번호, 차량번호 입력 폼 및 회원가입 버튼 포함
+# --- IGNORE ---  
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:provider/provider.dart';
-import '../providers/auth_provider.dart';
-import '../models/user_model.dart';
+import '../../providers/auth_provider.dart';
+import '../../models/user_model.dart';
 
-class SignupScreen extends StatefulWidget {
-  const SignupScreen({Key? key}) : super(key: key);
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({Key? key}) : super(key: key);
 
   @override
-  _SignupScreenState createState() => _SignupScreenState();
+  _RegisterScreenState createState() => _RegisterScreenState();
 }
 
-class _SignupScreenState extends State<SignupScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormBuilderState>();
   bool _isLoading = false;
 
@@ -35,14 +37,11 @@ class _SignupScreenState extends State<SignupScreen> {
 
       final success = await authProvider.signup(user);
 
-      if (!mounted) return;
-
       setState(() {
         _isLoading = false;
       });
 
       if (success) {
-        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('회원가입 성공! 로그인해주세요.'),
@@ -51,7 +50,6 @@ class _SignupScreenState extends State<SignupScreen> {
         );
         Navigator.pop(context);
       } else {
-        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(authProvider.errorMessage ?? '회원가입 실패'),

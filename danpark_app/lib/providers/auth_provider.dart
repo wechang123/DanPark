@@ -30,22 +30,26 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<bool> login(String email, String password) async {
+    print('AuthProvider: Starting login for email: $email');
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     final result = await _authService.login(email, password);
+    print('AuthProvider: Login result: $result');
 
     if (result['success']) {
       _user = _authService.currentUser;
       _errorMessage = null;
       _isLoading = false;
       notifyListeners();
+      print('AuthProvider: Login successful, user: $_user');
       return true;
     } else {
       _errorMessage = result['message'];
       _isLoading = false;
       notifyListeners();
+      print('AuthProvider: Login failed with error: $_errorMessage');
       return false;
     }
   }

@@ -41,17 +41,31 @@ class AuthService {
 
   Future<Map<String, dynamic>> login(String email, String password) async {
     try {
+      print('AuthService: Attempting login to ${ApiConfig.baseUrl}/auth/login');
+      print('AuthService: Email: $email');
+
       final response = await _dio.post(
-        '${ApiConfig.authEndpoint}/login',
+        '/auth/login', // SecurityConfig에 맞춤
         data: {
           'email': email,
           'password': password,
         },
       );
 
+      print('AuthService: Response status: ${response.statusCode}');
+      print('AuthService: Response data: ${response.data}');
+
       if (response.statusCode == 200) {
-        final data = response.data;
-        _token = data['token'];
+        final responseData = response.data;
+
+        // 백엔드 응답 형식에 맞게 수정
+        if (responseData['data'] != null && responseData['data']['accessToken'] != null) {
+          _token = responseData['data']['accessToken'];
+        } else if (responseData['token'] != null) {
+          _token = responseData['token'];
+        } else {
+          throw Exception('Token not found in response');
+        }
 
         // Save token
         await _storage.write(key: _tokenKey, value: _token);
@@ -71,6 +85,10 @@ class AuthService {
         'message': response.data['message'] ?? '로그인 실패',
       };
     } on DioException catch (e) {
+      print('AuthService: DioException - ${e.type}');
+      print('AuthService: Error message: ${e.message}');
+      print('AuthService: Error response: ${e.response?.data}');
+
       if (e.response != null) {
         return {
           'success': false,
@@ -79,9 +97,10 @@ class AuthService {
       }
       return {
         'success': false,
-        'message': '서버 연결 실패',
+        'message': '서버 연결 실패: ${e.message}',
       };
     } catch (e) {
+      print('AuthService: Unexpected error: $e');
       return {
         'success': false,
         'message': '알 수 없는 오류가 발생했습니다',
@@ -92,7 +111,7 @@ class AuthService {
   Future<Map<String, dynamic>> signup(User user) async {
     try {
       final response = await _dio.post(
-        '${ApiConfig.authEndpoint}/signup',
+        '/users/register', // SecurityConfig에 맞춤
         data: user.toSignupJson(),
       );
 
@@ -105,13 +124,24 @@ class AuthService {
 
       return {
         'success': false,
-        'message': response.data['message'] ?? '회원가입 실패',
+        'message': response.data is Map ? response.data['message'] ?? '회원가입 실패' : '회원가입 실패',
       };
     } on DioException catch (e) {
+      print('Signup error: ${e.response?.statusCode} - ${e.response?.data}');
+
       if (e.response != null) {
+        final data = e.response?.data;
+        String message = '회원가입 실패';
+
+        if (data is Map && data['message'] != null) {
+          message = data['message'].toString();
+        } else if (data is String) {
+          message = data;
+        }
+
         return {
           'success': false,
-          'message': e.response?.data['message'] ?? '회원가입 실패',
+          'message': message,
         };
       }
       return {
@@ -119,6 +149,7 @@ class AuthService {
         'message': '서버 연결 실패',
       };
     } catch (e) {
+      print('Unexpected error: $e');
       return {
         'success': false,
         'message': '알 수 없는 오류가 발생했습니다',
@@ -142,15 +173,28 @@ class AuthService {
 
     try {
       final decodedToken = JwtDecoder.decode(_token!);
+      print('Decoded token: $decodedToken');
 
-      // JWT에서 사용자 정보 추출
+      // JWT에서 사용자 정보 추출 - 백엔드에서는 sub에 userId를 저장
       _currentUser = User(
-        userId: decodedToken['userId'],
+        userId: int.tryParse(decodedToken['sub']?.toString() ?? ''),
         email: decodedToken['email'] ?? '',
         name: decodedToken['name'] ?? '',
         phoneNumber: decodedToken['phoneNumber'] ?? '',
         carNumber: decodedToken['carNumber'],
       );
+
+      // 토큰에 사용자 정보가 없으면 임시로 생성
+      if (_currentUser?.email?.isEmpty ?? true) {
+        _currentUser = User(
+          userId: int.tryParse(decodedToken['sub']?.toString() ?? ''),
+          email: 'user@example.com',
+          name: '사용자',
+          phoneNumber: '',
+        );
+      }
+
+      print('Current user set: $_currentUser');
     } catch (e) {
       print('Failed to decode token: $e');
       await clearSession();

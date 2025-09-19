@@ -1,10 +1,11 @@
-// 로그인 화면 구현 - 이메일과 비밀번호 입력 폼 및 로그인 버튼 포함
+# 로그인 화면 구현 - 이메일과 비밀번호 입력 폼 및 로그인 버튼 포함    
+# --- IGNORE --- 
 
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:provider/provider.dart';
-import '../providers/auth_provider.dart';
+import '../../providers/auth_provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -31,17 +32,13 @@ class _LoginScreenState extends State<LoginScreen> {
         values['password'],
       );
 
-      if (!mounted) return;
-
       setState(() {
         _isLoading = false;
       });
 
       if (success) {
-        if (!mounted) return;
         Navigator.pushReplacementNamed(context, '/home');
       } else {
-        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(authProvider.errorMessage ?? '로그인 실패'),
