@@ -22,11 +22,11 @@ pip install -r requirements.txt
 
 #### 가장 간단한 방법:
 ```bash
+# 상경관 주차장 테스트 (샘플 이미지 포함)
+python run_detection.py test_samples/sanggyeonggwan_parking.jpeg
+
 # 웹캠 테스트
 python run_detection.py
-
-# 이미지 테스트
-python run_detection.py test.jpg
 
 # 비디오 테스트
 python run_detection.py parking.mp4
@@ -34,12 +34,17 @@ python run_detection.py parking.mp4
 
 #### 또는 직접 실행:
 ```bash
+# 샘플 이미지로 테스트
+python detect.py --weights weights/best.pt --source test_samples/sanggyeonggwan_parking.jpeg
+
+# 웹캠 테스트
 python detect.py --weights weights/best.pt --source 0
 ```
 
 ## 📌 중요 파일
 - **모델**: `weights/best.pt` (14.6MB, Windows에서 학습된 캠퍼스 전용 모델)
 - **실행**: `run_detection.py` (Mac/Windows 자동 인식)
+- **샘플**: `test_samples/sanggyeonggwan_parking.jpeg` (상경관 주차장 CCTV 원본)
 - **결과**: `runs/detect/` 폴더에 저장됨
 
 ## 🆘 문제 해결
@@ -62,9 +67,11 @@ pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
 ```
 
 ## 🎯 테스트 이미지
-프로젝트에 테스트용 이미지가 없다면:
-1. 캠퍼스 주차장 사진 사용
-2. 또는 웹캠으로 실시간 테스트 (source=0)
+프로젝트에 상경관 주차장 CCTV 샘플 이미지가 포함되어 있습니다:
+- `test_samples/sanggyeonggwan_parking.jpeg` - 상경관 주차장 전경
+- `test_samples/sanggyeonggwan_parking2.jpeg` - 상경관 주차장 다른 각도
+
+이 이미지들로 모델 성능을 바로 확인할 수 있습니다!
 
 ## 📞 문의
 문제가 있으면 develop 브랜치에 이슈 등록하세요!
