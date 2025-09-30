@@ -18,6 +18,13 @@ pip install torch torchvision
 pip install -r requirements.txt
 ```
 
+### 2.5️⃣ 환경 테스트 (선택사항, 강력 권장!)
+```bash
+# Mac/Windows 호환성 및 모델 로드 테스트
+python test_environment.py
+```
+**⚠️ 중요**: 만약 실행이 안 되면, 먼저 이 테스트를 실행해서 문제를 진단하세요!
+
 ### 3️⃣ 바로 실행! (1분)
 
 #### 가장 간단한 방법:
@@ -49,21 +56,42 @@ python detect.py --weights weights/best.pt --source 0
 
 ## 🆘 문제 해결
 
-### "모델 파일이 없어요"
+### 🔍 먼저 환경 테스트를 실행하세요!
 ```bash
+python test_environment.py
+```
+이 스크립트가 문제를 자동으로 진단하고 해결 방법을 알려줍니다.
+
+### "Windows에서 학습한 모델이 Mac에서 안 돼요"
+**해결책**: 모델을 CPU 모드로 로드하도록 설정되어 있습니다. `test_environment.py`를 실행해서 PyTorch가 제대로 설치되었는지 확인하세요.
+
+```bash
+# Mac에서 PyTorch 재설치
+pip uninstall torch torchvision
+pip install torch torchvision
+```
+
+### "모델 파일이 없어요" 또는 "파일 크기가 너무 작아요"
+```bash
+git lfs install
 git lfs pull  # Git LFS로 모델 다운로드
 ```
 
-### "Mac에서 안 돼요"
+### "Mac M1/M2에서 설치가 안 돼요"
 ```bash
-# Mac 전용 설치 (M1/M2)
-pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+# Mac Apple Silicon 전용
+pip install torch torchvision
 ```
 
-### "Windows에서 안 돼요"
+### "Windows GPU에서 사용하고 싶어요"
 ```bash
-# Windows 전용 (CUDA 지원)
+# CUDA 11.8 지원
 pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
+```
+
+### "import 에러가 나요"
+```bash
+pip install -r requirements.txt --upgrade
 ```
 
 ## 🎯 테스트 이미지
