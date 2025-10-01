@@ -1,0 +1,9 @@
+# this drop notebooks from GitHub language stats
+*.ipynb linguist-vendored
+*.pt filter=lfs diff=lfs merge=lfs -text
+yolo/weights/*.pt filter=lfs diff=lfs merge=lfs -text
+
+# Gradle files
+/gradlew text eol=lf
+*.bat text eol=crlf
+*.jar binary
