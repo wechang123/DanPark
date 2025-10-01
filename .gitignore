@@ -313,6 +313,8 @@ ios/Pods/
 ios/build/
 *.xcworkspace/
 *.xcuserdata/
+frontend/ios/Pods/
+frontend/ios/build/
 
 # Campus model files
 campus_model.zip
