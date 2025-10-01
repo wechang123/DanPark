@@ -309,12 +309,10 @@ yarn-debug.*
 yarn-error.*
 
 # iOS
-ios/Pods/
-ios/build/
-*.xcworkspace/
-*.xcuserdata/
-frontend/ios/Pods/
-frontend/ios/build/
+**/ios/Pods/
+**/ios/build/
+*.xcworkspace
+*.xcuserdata
 
 # Campus model files
 campus_model.zip
