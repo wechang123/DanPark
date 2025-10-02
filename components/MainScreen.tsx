@@ -178,77 +178,38 @@ const MainScreen = () => {
                     </TouchableOpacity>
                 )}
 
-                {/* 지도 UI 목업 (카카오맵 API 연동 전) */}
-                <View style={styles.mapMock}>
-                    <View style={styles.mapMockGradient} />
-                    {filteredParkingLots.map((lot, idx) => (
-                        <TouchableOpacity
+                {/* 지도 (react-native-maps) */}
+                <MapView
+                    style={styles.map}
+                    initialRegion={{
+                        latitude: 37.32190,
+                        longitude: 127.12663,
+                        latitudeDelta: 0.005,
+                        longitudeDelta: 0.005,
+                    }}
+                    showsUserLocation={true}
+                    showsMyLocationButton={false}
+                >
+                    {filteredParkingLots.map((lot) => (
+                        <Marker
                             key={lot.id}
+                            coordinate={{
+                                latitude: lot.latitude,
+                                longitude: lot.longitude,
+                            }}
                             onPress={() => handleParkingLotSelect(lot)}
-                            style={[
-                                styles.mockMarker,
-                                {
-                                    top: insets.top + 80 + idx * 64, // 간격 증가
-                                    left: 16,
-                                },
-                            ]}
-                        >
-                            <View style={styles.mockMarkerContent}>
-                                <View style={styles.mockMarkerLeft}>
-                                    <Ionicons
-                                        name="location"
-                                        size={18}
-                                        color={
-                                            lot.congestionLevel === '만차'
-                                                ? '#EF4444'
-                                                : lot.congestionLevel === '혼잡'
-                                                ? '#F59E0B'
-                                                : lot.congestionLevel === '보통'
-                                                ? '#10B981'
-                                                : '#3B82F6'
-                                        }
-                                    />
-                                    <Text style={styles.mockMarkerText} numberOfLines={1}>
-                                        {lot.name}
-                                    </Text>
-                                </View>
-                                <View
-                                    style={[
-                                        styles.mockBadge,
-                                        {
-                                            backgroundColor:
-                                                lot.congestionLevel === '만차'
-                                                    ? '#FEE2E2'
-                                                    : lot.congestionLevel === '혼잡'
-                                                    ? '#FEF3C7'
-                                                    : lot.congestionLevel === '보통'
-                                                    ? '#D1FAE5'
-                                                    : '#DBEAFE',
-                                        },
-                                    ]}
-                                >
-                                    <Text
-                                        style={[
-                                            styles.mockBadgeText,
-                                            {
-                                                color:
-                                                    lot.congestionLevel === '만차'
-                                                        ? '#EF4444'
-                                                        : lot.congestionLevel === '혼잡'
-                                                        ? '#F59E0B'
-                                                        : lot.congestionLevel === '보통'
-                                                        ? '#10B981'
-                                                        : '#3B82F6',
-                                            },
-                                        ]}
-                                    >
-                                        {lot.currentParked}/{lot.totalSpaces}
-                                    </Text>
-                                </View>
-                            </View>
-                        </TouchableOpacity>
+                            pinColor={
+                                lot.congestionLevel === '만차'
+                                    ? '#EF4444'
+                                    : lot.congestionLevel === '혼잡'
+                                    ? '#F59E0B'
+                                    : lot.congestionLevel === '보통'
+                                    ? '#10B981'
+                                    : '#3B82F6'
+                            }
+                        />
                     ))}
-                </View>
+                </MapView>
 
                 {/* 상단 고정 검색창 - 항상 표시 */}
                 <View style={[styles.searchContainer, { top: insets.top + 8, zIndex: 1 }]} pointerEvents="box-none">
@@ -468,60 +429,6 @@ const styles = StyleSheet.create({
         color: '#3B82F6',
         fontWeight: '600',
         marginRight: 4,
-    },
-    // 지도 목업 전용 스타일
-    mapMock: { ...StyleSheet.absoluteFillObject, backgroundColor: '#E6F0FF' },
-    mapMockGradient: {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(255,255,255,0.35)',
-    },
-    mockMarker: {
-        position: 'absolute',
-        backgroundColor: 'white',
-        borderRadius: 12,
-        shadowColor: '#000',
-        shadowOpacity: 0.15,
-        shadowRadius: 10,
-        shadowOffset: { width: 0, height: 2 },
-        elevation: 5,
-        width: '70%', // 너비 증가
-    },
-    mockMarkerContent: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingVertical: 10,
-        paddingHorizontal: 14,
-        width: '100%',
-    },
-    mockMarkerLeft: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        flex: 1,
-        marginRight: 12,
-    },
-    mockMarkerText: {
-        marginLeft: 8,
-        color: '#111827',
-        fontSize: 15,
-        fontWeight: '600',
-        flex: 1,
-    },
-    mockBadge: {
-        borderRadius: 8,
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        minWidth: 70,
-        alignItems: 'center',
-    },
-    mockBadgeText: {
-        fontSize: 14,
-        fontWeight: '700',
-        textAlign: 'center',
     },
     fab: {
         position: 'absolute',
