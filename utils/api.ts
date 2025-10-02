@@ -21,6 +21,7 @@ export interface SignupRequest {
   email: string;
   password: string;
   name: string;
+  studentId: string;
 }
 
 export interface LoginRequest {
@@ -110,4 +111,94 @@ export const login = async (data: LoginRequest): Promise<LoginResponse> => {
 export const logout = async (): Promise<void> => {
   await AsyncStorage.clear();
   router.replace('/(auth)/login');
+};
+
+/**
+ * 즐겨찾기 추가
+ */
+export const addFavorite = async (parkingLotId: string): Promise<void> => {
+  await apiClient('/api/favorites', {
+    method: 'POST',
+    body: JSON.stringify({ parkingLotId }),
+  });
+};
+
+/**
+ * 즐겨찾기 삭제
+ */
+export const removeFavorite = async (parkingLotId: string): Promise<void> => {
+  await apiClient(`/api/favorites/${parkingLotId}`, {
+    method: 'DELETE',
+  });
+};
+
+/**
+ * 즐겨찾기 목록 조회
+ */
+export const getFavorites = async (): Promise<string[]> => {
+  const response = await apiClient<string[]>('/api/favorites');
+  return response.data || [];
+};
+
+/**
+ * 사용자 정보 조회
+ */
+export interface UserInfo {
+  id: number;
+  email: string;
+  name: string;
+  studentId: string;
+  department?: string;
+}
+
+export const getUserInfo = async (): Promise<UserInfo> => {
+  const response = await apiClient<UserInfo>('/api/users/me');
+  if (response.data === null) {
+    throw new Error('사용자 정보를 불러올 수 없습니다.');
+  }
+  return response.data;
+};
+
+/**
+ * 사용자 정보 수정
+ */
+export const updateUserInfo = async (data: Partial<UserInfo>): Promise<UserInfo> => {
+  const response = await apiClient<UserInfo>('/api/users/me', {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  });
+  if (response.data === null) {
+    throw new Error('사용자 정보 수정에 실패했습니다.');
+  }
+  return response.data;
+};
+
+/**
+ * 설정 조회
+ */
+export interface AppSettings {
+  notifications: boolean;
+  location: boolean;
+  autoRefresh: boolean;
+  theme: 'light' | 'dark';
+}
+
+export const getSettings = async (): Promise<AppSettings> => {
+  const response = await apiClient<AppSettings>('/api/settings');
+  return response.data || {
+    notifications: true,
+    location: true,
+    autoRefresh: false,
+    theme: 'light',
+  };
+};
+
+/**
+ * 설정 변경
+ */
+export const updateSettings = async (settings: Partial<AppSettings>): Promise<void> => {
+  await apiClient('/api/settings', {
+    method: 'PUT',
+    body: JSON.stringify(settings),
+  });
 };

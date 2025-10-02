@@ -1,5 +1,7 @@
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import { ParkingLot } from '../types';
+import { useParkingStream, ParkingUpdateEvent } from '../hooks/useParkingStream';
+import * as api from '../utils/api';
 
 // Mock Data is defined here as the source of truth
 // 단국대학교 죽전캠퍼스 주차장 위치 (카카오맵 API로 검색한 정확한 좌표)
@@ -111,6 +113,8 @@ interface ParkingLotContextType {
     toggleFavorite: (id: string) => void;
     toggleParking: (id: string, spotNumber: string | null) => void;
     currentParking: ParkingLot | null;
+    updateParkingLot: (update: ParkingUpdateEvent['data']) => void;
+    connectionStatus: string;
 }
 
 const ParkingLotContext = createContext<ParkingLotContextType | undefined>(undefined);
@@ -119,10 +123,75 @@ export const ParkingLotProvider: React.FC<{ children: ReactNode }> = ({ children
     const [parkingLots, setParkingLots] = useState<ParkingLot[]>(MOCK_PARKING_LOTS);
     const [currentParking, setCurrentParking] = useState<ParkingLot | null>(null);
 
-    const toggleFavorite = (id: string) => {
+    // 즐겨찾기 목록 불러오기
+    useEffect(() => {
+        const loadFavorites = async () => {
+            try {
+                const favorites = await api.getFavorites();
+                setParkingLots(prevLots =>
+                    prevLots.map(lot => ({
+                        ...lot,
+                        isFavorite: favorites.includes(lot.id),
+                    }))
+                );
+            } catch (error) {
+                console.error('[ParkingLotContext] 즐겨찾기 불러오기 실패:', error);
+            }
+        };
+        loadFavorites();
+    }, []);
+
+    // SSE를 통한 실시간 주차장 업데이트
+    const updateParkingLot = (update: ParkingUpdateEvent['data']) => {
+        setParkingLots(prevLots =>
+            prevLots.map(lot => {
+                if (lot.id === update.id) {
+                    return {
+                        ...lot,
+                        totalSpaces: update.totalSpaces,
+                        currentParked: update.currentParked,
+                        congestionLevel: update.congestionLevel,
+                    };
+                }
+                return lot;
+            })
+        );
+    };
+
+    // SSE 구독
+    const { connectionStatus } = useParkingStream({
+        onUpdate: (event) => {
+            if (event.type === 'PARKING_UPDATE') {
+                updateParkingLot(event.data);
+            }
+        },
+        onError: (error) => {
+            console.error('[ParkingLotContext] SSE 오류:', error);
+        },
+    });
+
+    const toggleFavorite = async (id: string) => {
+        const lot = parkingLots.find(l => l.id === id);
+        if (!lot) return;
+
+        // Optimistic update
         setParkingLots(prevLots =>
             prevLots.map(lot => (lot.id === id ? { ...lot, isFavorite: !lot.isFavorite } : lot))
         );
+
+        try {
+            if (lot.isFavorite) {
+                await api.removeFavorite(id);
+            } else {
+                await api.addFavorite(id);
+            }
+        } catch (error) {
+            console.error('[ParkingLotContext] 즐겨찾기 토글 실패:', error);
+            // Rollback on error
+            setParkingLots(prevLots =>
+                prevLots.map(lot => (lot.id === id ? { ...lot, isFavorite: lot.isFavorite } : lot))
+            );
+        }
     };
 
     const toggleParking = (id: string, spotNumber: string | null) => {
@@ -157,7 +226,14 @@ export const ParkingLotProvider: React.FC<{ children: ReactNode }> = ({ children
     };
 
     return (
-        <ParkingLotContext.Provider value={{ parkingLots, toggleFavorite, toggleParking, currentParking }}>
+        <ParkingLotContext.Provider value={{
+            parkingLots,
+            toggleFavorite,
+            toggleParking,
+            currentParking,
+            updateParkingLot,
+            connectionStatus
+        }}>
             {children}
         </ParkingLotContext.Provider>
     );

@@ -16,7 +16,7 @@ import ParkingLotDiagramModal from './ParkingLotDiagramModal';
 
 const MainScreen = () => {
     const insets = useSafeAreaInsets();
-    const { parkingLots, toggleFavorite } = useParkingLots();
+    const { parkingLots, toggleFavorite, connectionStatus } = useParkingLots();
     const [searchQuery, setSearchQuery] = useState('');
     const [sortOption, setSortOption] = useState<SortOption>('거리순');
     const [selectedParkingLot, setSelectedParkingLot] = useState<ParkingLot | null>(null);
@@ -142,6 +142,20 @@ const MainScreen = () => {
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <View style={styles.container}>
+                {/* SSE 연결 상태 표시 */}
+                {connectionStatus === 'connected' && (
+                    <View style={[styles.connectionStatus, styles.statusConnected, { top: insets.top + 10 }]}>
+                        <View style={styles.statusDot} />
+                        <Text style={styles.statusText}>실시간</Text>
+                    </View>
+                )}
+                {connectionStatus === 'error' && (
+                    <View style={[styles.connectionStatus, styles.statusError, { top: insets.top + 10 }]}>
+                        <Ionicons name="warning" size={14} color="#EF4444" />
+                        <Text style={[styles.statusText, { color: '#EF4444' }]}>연결 끊김</Text>
+                    </View>
+                )}
+
                 {/* 현재 주차 중인 정보 */}
                 {currentParking && (
                     <TouchableOpacity
@@ -415,6 +429,39 @@ const styles = StyleSheet.create({
     backButton: { padding: 4 },
     detailHeaderText: { flex: 1, textAlign: 'center', fontSize: 18, fontWeight: '600' },
     headerIconButton: { padding: 4, marginLeft: 8 },
+    connectionStatus: {
+        position: 'absolute',
+        right: 16,
+        zIndex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 6,
+        paddingHorizontal: 12,
+        borderRadius: 20,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 2,
+    },
+    statusConnected: {
+        backgroundColor: '#ECFDF5',
+    },
+    statusError: {
+        backgroundColor: '#FEE2E2',
+    },
+    statusDot: {
+        width: 6,
+        height: 6,
+        borderRadius: 3,
+        backgroundColor: '#10B981',
+        marginRight: 6,
+    },
+    statusText: {
+        fontSize: 12,
+        fontWeight: '500',
+        color: '#10B981',
+    },
     sortButton: {
         flexDirection: 'row',
         alignItems: 'center',

@@ -1,15 +1,10 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Link, useRouter } from 'expo-router';
+import * as api from '../utils/api';
 
-// Mock Data
-const userInfo = {
-    name: '김단국',
-    studentId: '32200000',
-    department: '소프트웨어학과',
-};
 const menuItems = [
     { title: '주차 기록', icon: 'time-outline', route: '/parking-history' },
     { title: '이용 통계', icon: 'stats-chart-outline', route: '/parking-stats' },
@@ -20,6 +15,22 @@ const menuItems = [
 
 const MyPageScreen = () => {
     const router = useRouter();
+    const [userInfo, setUserInfo] = useState<api.UserInfo | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const loadUserData = async () => {
+            try {
+                const data = await api.getUserInfo();
+                setUserInfo(data);
+            } catch (error) {
+                console.error('[MyPageScreen] 사용자 정보 로드 실패:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadUserData();
+    }, []);
     return (
         <SafeAreaView style={styles.safeArea}>
             <ScrollView style={styles.container}>
@@ -28,16 +39,26 @@ const MyPageScreen = () => {
                 </View>
 
                 {/* User Profile */}
-                <View style={styles.profileSection}>
-                    <View style={styles.avatar}>
-                        <Text style={styles.avatarText}>{userInfo.name.charAt(0)}</Text>
+                {loading ? (
+                    <View style={styles.loadingContainer}>
+                        <ActivityIndicator size="large" color="#3B82F6" />
                     </View>
-                    <View>
-                        <Text style={styles.name}>{userInfo.name}</Text>
-                        <Text style={styles.department}>{userInfo.department}</Text>
-                        <Text style={styles.studentId}>{userInfo.studentId}</Text>
+                ) : userInfo ? (
+                    <View style={styles.profileSection}>
+                        <View style={styles.avatar}>
+                            <Text style={styles.avatarText}>{userInfo.name.charAt(0)}</Text>
+                        </View>
+                        <View>
+                            <Text style={styles.name}>{userInfo.name}</Text>
+                            {userInfo.department && <Text style={styles.department}>{userInfo.department}</Text>}
+                            <Text style={styles.studentId}>{userInfo.studentId}</Text>
+                        </View>
                     </View>
-                </View>
+                ) : (
+                    <View style={styles.profileSection}>
+                        <Text style={styles.errorText}>사용자 정보를 불러올 수 없습니다.</Text>
+                    </View>
+                )}
 
                 {/* Menu */}
                 <View style={styles.menuContainer}>
@@ -53,9 +74,8 @@ const MyPageScreen = () => {
                 {/* Logout Button */}
                 <TouchableOpacity
                     style={styles.logoutButton}
-                    onPress={() => {
-                        // 로그아웃 처리
-                        router.replace('/(auth)/login');
+                    onPress={async () => {
+                        await api.logout();
                     }}
                 >
                     <Text style={styles.logoutButtonText}>로그아웃</Text>
@@ -128,6 +148,15 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     logoutButtonText: { color: '#EF4444', fontSize: 16, fontWeight: '500' },
+    loadingContainer: {
+        padding: 48,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    errorText: {
+        color: '#EF4444',
+        fontSize: 14,
+    },
 });
 
 export default MyPageScreen;

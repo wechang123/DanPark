@@ -14,6 +14,7 @@ const AuthScreen: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
+    const [studentId, setStudentId] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
     const handleLogin = async () => {
@@ -34,20 +35,35 @@ const AuthScreen: React.FC = () => {
     };
 
     const handleSignup = async () => {
-        if (!email || !password || !name) {
+        // 입력 검증
+        if (!email || !password || !name || !studentId) {
             Alert.alert('오류', '모든 필드를 입력해주세요.');
+            return;
+        }
+
+        // 이메일 형식 검증
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            Alert.alert('오류', '올바른 이메일 형식을 입력해주세요.');
+            return;
+        }
+
+        // 비밀번호 강도 검증 (최소 8자, 영문+숫자)
+        if (password.length < 8) {
+            Alert.alert('오류', '비밀번호는 최소 8자 이상이어야 합니다.');
             return;
         }
 
         setIsLoading(true);
         try {
-            await signup({ email, password, name });
+            await signup({ email, password, name, studentId });
             Alert.alert('회원가입 성공', '로그인해주세요.', [
                 { text: '확인', onPress: () => setIsLogin(true) }
             ]);
             setEmail('');
             setPassword('');
             setName('');
+            setStudentId('');
         } catch (error: any) {
             Alert.alert('회원가입 실패', error.message || '회원가입에 실패했습니다.');
         } finally {
@@ -130,12 +146,14 @@ const AuthScreen: React.FC = () => {
                 <TextInput
                     style={styles.signupInput}
                     placeholder="이름"
+                    placeholderTextColor="#9CA3AF"
                     value={name}
                     onChangeText={setName}
                 />
                 <TextInput
                     style={styles.signupInput}
                     placeholder="이메일"
+                    placeholderTextColor="#9CA3AF"
                     value={email}
                     onChangeText={setEmail}
                     autoCapitalize="none"
@@ -143,7 +161,17 @@ const AuthScreen: React.FC = () => {
                 />
                 <TextInput
                     style={styles.signupInput}
-                    placeholder="비밀번호"
+                    placeholder="학번"
+                    placeholderTextColor="#9CA3AF"
+                    value={studentId}
+                    onChangeText={setStudentId}
+                    keyboardType="number-pad"
+                    maxLength={8}
+                />
+                <TextInput
+                    style={styles.signupInput}
+                    placeholder="비밀번호 (최소 8자)"
+                    placeholderTextColor="#9CA3AF"
                     value={password}
                     onChangeText={setPassword}
                     secureTextEntry

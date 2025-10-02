@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Switch, TouchableOpacity, useColorScheme } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, Switch, TouchableOpacity, useColorScheme, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../context/ThemeContext';
+import * as api from '../utils/api';
 
 // Reusable component for menu items
 const SettingItem = ({ label, isSwitch, value, onValueChange, isDestructive = false, icon }) => (
@@ -31,6 +32,44 @@ const SettingsScreen = () => {
     const [notifications, setNotifications] = useState(true);
     const [location, setLocation] = useState(true);
     const [autoRefresh, setAutoRefresh] = useState(false);
+    const [loading, setLoading] = useState(true);
+
+    // 설정 불러오기
+    useEffect(() => {
+        const loadSettings = async () => {
+            try {
+                const settings = await api.getSettings();
+                setNotifications(settings.notifications);
+                setLocation(settings.location);
+                setAutoRefresh(settings.autoRefresh);
+                setTheme(settings.theme);
+            } catch (error) {
+                console.error('[SettingsScreen] 설정 로드 실패:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadSettings();
+    }, []);
+
+    // 설정 변경 핸들러
+    const handleSettingChange = async (key: keyof api.AppSettings, value: any) => {
+        try {
+            await api.updateSettings({ [key]: value });
+        } catch (error) {
+            console.error('[SettingsScreen] 설정 업데이트 실패:', error);
+        }
+    };
+
+    if (loading) {
+        return (
+            <SafeAreaView style={styles.safeArea}>
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="large" color="#3B82F6" />
+                </View>
+            </SafeAreaView>
+        );
+    }
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -43,28 +82,41 @@ const SettingsScreen = () => {
                             label="알림 허용"
                             isSwitch
                             value={notifications}
-                            onValueChange={setNotifications}
+                            onValueChange={(value) => {
+                                setNotifications(value);
+                                handleSettingChange('notifications', value);
+                            }}
                             icon="notifications-outline"
                         />
                         <SettingItem
                             label="위치 서비스"
                             isSwitch
                             value={location}
-                            onValueChange={setLocation}
+                            onValueChange={(value) => {
+                                setLocation(value);
+                                handleSettingChange('location', value);
+                            }}
                             icon="location-outline"
                         />
                         <SettingItem
                             label="자동 새로고침"
                             isSwitch
                             value={autoRefresh}
-                            onValueChange={setAutoRefresh}
+                            onValueChange={(value) => {
+                                setAutoRefresh(value);
+                                handleSettingChange('autoRefresh', value);
+                            }}
                             icon="refresh-outline"
                         />
                         <SettingItem
                             label="다크 모드"
                             isSwitch
                             value={isDark}
-                            onValueChange={value => setTheme(value ? 'dark' : 'light')}
+                            onValueChange={(value) => {
+                                const newTheme = value ? 'dark' : 'light';
+                                setTheme(newTheme);
+                                handleSettingChange('theme', newTheme);
+                            }}
                             icon="moon-outline"
                         />
                     </View>
@@ -161,6 +213,11 @@ const styles = StyleSheet.create({
     itemLabel: { fontSize: 16 },
     versionText: { fontSize: 16, color: '#6B7280' },
     destructiveText: { color: '#EF4444' },
+    loadingContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
 });
 
 export default SettingsScreen;
