@@ -1,20 +1,58 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, SafeAreaView, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, SafeAreaView, StatusBar, Alert, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 const dkuLogo = require('../assets/images/dku_logo.png');
 
 import { useRouter } from 'expo-router';
+import { useAuth } from '../context/AuthContext';
 
 const AuthScreen: React.FC = () => {
     const router = useRouter();
+    const { login, signup } = useAuth();
     const [isLogin, setIsLogin] = useState(true);
-    const [id, setId] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [name, setName] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
-    const handleSubmit = () => {
-        // In a real app, you'd have validation and an API call here.
-        router.replace('/(tabs)');
+    const handleLogin = async () => {
+        if (!email || !password) {
+            Alert.alert('오류', '이메일과 비밀번호를 입력해주세요.');
+            return;
+        }
+
+        setIsLoading(true);
+        try {
+            await login({ email, password });
+            router.replace('/(tabs)');
+        } catch (error: any) {
+            Alert.alert('로그인 실패', error.message || '로그인에 실패했습니다.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleSignup = async () => {
+        if (!email || !password || !name) {
+            Alert.alert('오류', '모든 필드를 입력해주세요.');
+            return;
+        }
+
+        setIsLoading(true);
+        try {
+            await signup({ email, password, name });
+            Alert.alert('회원가입 성공', '로그인해주세요.', [
+                { text: '확인', onPress: () => setIsLogin(true) }
+            ]);
+            setEmail('');
+            setPassword('');
+            setName('');
+        } catch (error: any) {
+            Alert.alert('회원가입 실패', error.message || '회원가입에 실패했습니다.');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     if (isLogin) {
@@ -28,17 +66,35 @@ const AuthScreen: React.FC = () => {
                     </View>
 
                     <View style={styles.formSection}>
-                        <TextInput style={styles.input} placeholder="아이디" placeholderTextColor="#9CA3AF" />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="이메일"
+                            placeholderTextColor="#9CA3AF"
+                            value={email}
+                            onChangeText={setEmail}
+                            autoCapitalize="none"
+                            keyboardType="email-address"
+                        />
                         <TextInput
                             style={styles.input}
                             placeholder="비밀번호"
                             placeholderTextColor="#9CA3AF"
+                            value={password}
+                            onChangeText={setPassword}
                             secureTextEntry
                         />
                     </View>
 
-                    <TouchableOpacity style={styles.loginButton} onPress={handleSubmit}>
-                        <Text style={styles.loginButtonText}>로그인</Text>
+                    <TouchableOpacity
+                        style={styles.loginButton}
+                        onPress={handleLogin}
+                        disabled={isLoading}
+                    >
+                        {isLoading ? (
+                            <ActivityIndicator color="#0C2A66" />
+                        ) : (
+                            <Text style={styles.loginButtonText}>로그인</Text>
+                        )}
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={() => setIsLogin(false)}>
@@ -71,11 +127,37 @@ const AuthScreen: React.FC = () => {
                 <Text style={styles.signupHeaderTitle}>회원가입</Text>
             </View>
             <View style={styles.signupContent}>
-                <TextInput style={styles.signupInput} placeholder="이름" />
-                <TextInput style={styles.signupInput} placeholder="아이디" />
-                <TextInput style={styles.signupInput} placeholder="비밀번호" secureTextEntry />
-                <TouchableOpacity style={[styles.loginButton, { marginTop: 32 }]} onPress={handleSubmit}>
-                    <Text style={styles.loginButtonText}>회원가입</Text>
+                <TextInput
+                    style={styles.signupInput}
+                    placeholder="이름"
+                    value={name}
+                    onChangeText={setName}
+                />
+                <TextInput
+                    style={styles.signupInput}
+                    placeholder="이메일"
+                    value={email}
+                    onChangeText={setEmail}
+                    autoCapitalize="none"
+                    keyboardType="email-address"
+                />
+                <TextInput
+                    style={styles.signupInput}
+                    placeholder="비밀번호"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry
+                />
+                <TouchableOpacity
+                    style={[styles.loginButton, { marginTop: 32 }]}
+                    onPress={handleSignup}
+                    disabled={isLoading}
+                >
+                    {isLoading ? (
+                        <ActivityIndicator color="#0C2A66" />
+                    ) : (
+                        <Text style={styles.loginButtonText}>회원가입</Text>
+                    )}
                 </TouchableOpacity>
             </View>
         </SafeAreaView>

@@ -1,6 +1,7 @@
 import 'react-native-gesture-handler';
 import { DarkTheme, DefaultTheme, ThemeProvider as NavigationThemeProvider } from '@react-navigation/native';
 import { ThemeProvider } from '../context/ThemeContext';
+import { AuthProvider, useAuth } from '../context/AuthContext';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -19,20 +20,28 @@ export const unstable_settings = {
 import AuthScreen from '../components/AuthScreen';
 
 export default function RootLayout() {
-    const [isLoading, setIsLoading] = useState(true);
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    return (
+        <AuthProvider>
+            <RootNavigator />
+        </AuthProvider>
+    );
+}
+
+function RootNavigator() {
+    const { isAuthenticated, isLoading: authLoading } = useAuth();
+    const [isSplashLoading, setIsSplashLoading] = useState(true);
 
     // Splash Screen Logic
     useEffect(() => {
-        const timer = setTimeout(() => setIsLoading(false), 2500);
+        const timer = setTimeout(() => setIsSplashLoading(false), 2500);
         return () => clearTimeout(timer);
     }, []);
 
-    if (isLoading) {
-        return <SplashScreen onFinish={() => setIsLoading(false)} />;
+    if (isSplashLoading || authLoading) {
+        return <SplashScreen onFinish={() => setIsSplashLoading(false)} />;
     }
 
-    if (!isLoggedIn) {
+    if (!isAuthenticated) {
         return (
             <Stack screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="(auth)" options={{ headerShown: false }} />

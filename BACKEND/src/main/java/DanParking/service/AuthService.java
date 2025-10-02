@@ -1,8 +1,10 @@
 package DanParking.service;
 
 import DanParking.entity.RefreshToken;
+import DanParking.entity.Role;
 import DanParking.entity.User;
 import DanParking.dto.request.LoginRequestDTO;
+import DanParking.dto.request.UserCreateDTO;
 import DanParking.dto.response.TokenResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -58,5 +60,27 @@ public class AuthService {
     @Transactional
     public void logout(Long userId) {
         refreshTokenJpaRepository.deleteByUserId(userId);
+    }
+
+    @Transactional
+    public Long signup(UserCreateDTO userCreateDTO) {
+        // 이메일 중복 체크
+        if (userJpaRepository.findByEmail(userCreateDTO.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("이미 존재하는 이메일입니다: " + userCreateDTO.getEmail());
+        }
+
+        // 비밀번호 암호화
+        String encodedPassword = passwordEncoder.encode(userCreateDTO.getPassword());
+
+        // 사용자 생성
+        User user = User.builder()
+                .email(userCreateDTO.getEmail())
+                .password(encodedPassword)
+                .name(userCreateDTO.getName())
+                .role(Role.ROLE_USER)
+                .build();
+
+        User savedUser = userJpaRepository.save(user);
+        return savedUser.getId();
     }
 }

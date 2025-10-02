@@ -1,6 +1,7 @@
 package DanParking.controller;
 
 import DanParking.dto.request.LoginRequestDTO;
+import DanParking.dto.request.UserCreateDTO;
 import DanParking.dto.response.ApiResponseDTO;
 import DanParking.dto.response.TokenResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,12 @@ import DanParking.service.AuthService;
 public class AuthController {
     @Autowired
     private AuthService authService;
+
+    @PostMapping("/auth/signup")
+    public ApiResponseDTO<Long> signup(@RequestBody UserCreateDTO userCreateDTO) {
+        Long userId = authService.signup(userCreateDTO);
+        return ApiResponseDTO.success(userId);
+    }
 
     @PostMapping("/auth/login")
     public ApiResponseDTO<TokenResponseDTO> login(@RequestBody LoginRequestDTO loginRequestDTO) {
