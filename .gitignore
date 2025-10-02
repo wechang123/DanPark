@@ -314,6 +314,15 @@ yarn-error.*
 *.xcworkspace
 *.xcuserdata
 
+# Android
+**/android/build/
+**/android/app/build/
+**/android/.gradle/
+android/app/debug.keystore
+android/app/release.keystore
+*.apk
+*.aab
+
 # Campus model files
 campus_model.zip
 campus_model_for_mac.zip
