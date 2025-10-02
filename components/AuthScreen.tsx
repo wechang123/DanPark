@@ -1,0 +1,126 @@
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, SafeAreaView, StatusBar } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+
+const dkuLogo = require('../assets/images/dku_logo.png');
+
+import { useRouter } from 'expo-router';
+
+const AuthScreen: React.FC = () => {
+    const router = useRouter();
+    const [isLogin, setIsLogin] = useState(true);
+    const [id, setId] = useState('');
+    const [password, setPassword] = useState('');
+
+    const handleSubmit = () => {
+        // In a real app, you'd have validation and an API call here.
+        router.replace('/(tabs)');
+    };
+
+    if (isLogin) {
+        return (
+            <SafeAreaView style={styles.loginContainer}>
+                <StatusBar barStyle="light-content" />
+                <View style={styles.loginContent}>
+                    <View style={styles.headerSection}>
+                        <Text style={styles.headerTitle}>DanPark</Text>
+                        <Text style={styles.headerSubtitle}>편안한 단국대 주차, 단주차</Text>
+                    </View>
+
+                    <View style={styles.formSection}>
+                        <TextInput style={styles.input} placeholder="아이디" placeholderTextColor="#9CA3AF" />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="비밀번호"
+                            placeholderTextColor="#9CA3AF"
+                            secureTextEntry
+                        />
+                    </View>
+
+                    <TouchableOpacity style={styles.loginButton} onPress={handleSubmit}>
+                        <Text style={styles.loginButtonText}>로그인</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity onPress={() => setIsLogin(false)}>
+                        <Text style={styles.signupLink}>회원가입</Text>
+                    </TouchableOpacity>
+
+                    <View style={styles.dividerContainer}>
+                        <View style={styles.divider} />
+                        <Text style={styles.dividerText}>OR</Text>
+                        <View style={styles.divider} />
+                    </View>
+
+                    <TouchableOpacity style={styles.portalButton}>
+                        <Image source={dkuLogo} style={styles.portalLogo} />
+                        <Text style={styles.portalButtonText}>단국대 포털로 로그인</Text>
+                    </TouchableOpacity>
+                </View>
+            </SafeAreaView>
+        );
+    }
+
+    // Sign Up Screen
+    return (
+        <SafeAreaView style={styles.signupContainer}>
+            <StatusBar barStyle="dark-content" />
+            <View style={styles.signupHeader}>
+                <TouchableOpacity onPress={() => setIsLogin(true)} style={styles.backButton}>
+                    <Ionicons name="arrow-back" size={24} color="#111827" />
+                </TouchableOpacity>
+                <Text style={styles.signupHeaderTitle}>회원가입</Text>
+            </View>
+            <View style={styles.signupContent}>
+                <TextInput style={styles.signupInput} placeholder="이름" />
+                <TextInput style={styles.signupInput} placeholder="아이디" />
+                <TextInput style={styles.signupInput} placeholder="비밀번호" secureTextEntry />
+                <TouchableOpacity style={[styles.loginButton, { marginTop: 32 }]} onPress={handleSubmit}>
+                    <Text style={styles.loginButtonText}>회원가입</Text>
+                </TouchableOpacity>
+            </View>
+        </SafeAreaView>
+    );
+};
+
+const styles = StyleSheet.create({
+    // Login Screen Styles
+    loginContainer: { flex: 1, backgroundColor: '#0C2A66' },
+    loginContent: { flex: 1, justifyContent: 'center', paddingHorizontal: 24 },
+    headerSection: { alignItems: 'center', marginBottom: 48 },
+    headerTitle: { fontSize: 48, fontWeight: 'bold', color: 'white' },
+    headerSubtitle: { fontSize: 18, color: '#DBEAFE' },
+    formSection: { width: '100%', marginBottom: 16 },
+    input: { backgroundColor: 'white', borderRadius: 12, padding: 16, fontSize: 16, marginBottom: 16 },
+    loginButton: { backgroundColor: 'white', borderRadius: 12, padding: 18, alignItems: 'center', width: '100%' },
+    loginButtonText: { color: '#0C2A66', fontSize: 18, fontWeight: '600' },
+    signupLink: { color: 'white', textDecorationLine: 'underline', textAlign: 'center', marginTop: 24 },
+    dividerContainer: { flexDirection: 'row', alignItems: 'center', marginVertical: 32 },
+    divider: { flex: 1, height: 1, backgroundColor: '#1E40AF' },
+    dividerText: { color: '#3B82F6', marginHorizontal: 16 },
+    portalButton: {
+        flexDirection: 'row',
+        backgroundColor: '#1D4ED8',
+        borderRadius: 12,
+        padding: 18,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    portalLogo: { width: 24, height: 24, marginRight: 12, tintColor: 'white' },
+    portalButtonText: { color: 'white', fontSize: 16, fontWeight: '500' },
+
+    // Signup Screen Styles
+    signupContainer: { flex: 1, backgroundColor: 'white' },
+    signupHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 16,
+        borderBottomWidth: 1,
+        borderBottomColor: '#E5E7EB',
+    },
+    backButton: { padding: 8 },
+    signupHeaderTitle: { fontSize: 20, fontWeight: '600', marginLeft: 16 },
+    signupContent: { padding: 24 },
+    signupInput: { borderBottomWidth: 2, borderColor: '#E5E7EB', paddingVertical: 12, fontSize: 18, marginBottom: 24 },
+});
+
+export default AuthScreen;
