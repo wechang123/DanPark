@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useRef, useCallback, useEffect } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import { KakaoMapView, Marker as KakaoMarker } from '@react-native-kakao/map';
 import BottomSheet, { BottomSheetFlatList, BottomSheetMethods, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
@@ -13,6 +13,22 @@ import ParkingDetailContent from './ParkingDetailContent';
 import SortFilterModal from './SortFilterModal';
 import { useParkingLots } from '../context/ParkingLotContext';
 import ParkingLotDiagramModal from './ParkingLotDiagramModal';
+
+// 혼잡도별 마커 색상
+const getMarkerColor = (congestionLevel: string): string => {
+    switch (congestionLevel) {
+        case '여유':
+            return '#3B82F6'; // 파란색
+        case '보통':
+            return '#10B981'; // 초록색
+        case '혼잡':
+            return '#F59E0B'; // 주황색
+        case '만차':
+            return '#EF4444'; // 빨간색
+        default:
+            return '#3B82F6';
+    }
+};
 
 const MainScreen = () => {
     const insets = useSafeAreaInsets();
@@ -192,38 +208,28 @@ const MainScreen = () => {
                     </TouchableOpacity>
                 )}
 
-                {/* 지도 (react-native-maps) */}
-                <MapView
+                {/* 지도 (카카오맵) */}
+                <KakaoMapView
                     style={styles.map}
                     initialRegion={{
                         latitude: 37.32190,
                         longitude: 127.12663,
-                        latitudeDelta: 0.005,
-                        longitudeDelta: 0.005,
+                        zoomLevel: 15,
                     }}
                     showsUserLocation={true}
-                    showsMyLocationButton={false}
                 >
                     {filteredParkingLots.map((lot) => (
-                        <Marker
+                        <KakaoMarker
                             key={lot.id}
                             coordinate={{
                                 latitude: lot.latitude,
                                 longitude: lot.longitude,
                             }}
                             onPress={() => handleParkingLotSelect(lot)}
-                            pinColor={
-                                lot.congestionLevel === '만차'
-                                    ? '#EF4444'
-                                    : lot.congestionLevel === '혼잡'
-                                    ? '#F59E0B'
-                                    : lot.congestionLevel === '보통'
-                                    ? '#10B981'
-                                    : '#3B82F6'
-                            }
+                            color={getMarkerColor(lot.congestionLevel)}
                         />
                     ))}
-                </MapView>
+                </KakaoMapView>
 
                 {/* 상단 고정 검색창 - 항상 표시 */}
                 <View style={[styles.searchContainer, { top: insets.top + 8, zIndex: 1 }]} pointerEvents="box-none">

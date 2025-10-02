@@ -9,7 +9,8 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.DanparkApp"
     },
     "android": {
       "adaptiveIcon": {
@@ -36,6 +37,26 @@
           "backgroundColor": "#ffffff",
           "dark": {
             "backgroundColor": "#000000"
+          }
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "extraMavenRepos": ["https://devrepo.kakao.com/nexus/content/groups/public/"]
+          }
+        }
+      ],
+      [
+        "@react-native-kakao/core",
+        {
+          "nativeAppKey": "286361efcc4291aab1767f6e41fd4e1b",
+          "android": {
+            "appKey": "7ccb91f18043b3c38f02707cdc53fb0b"
+          },
+          "ios": {
+            "appKey": "7ccb91f18043b3c38f02707cdc53fb0b"
           }
         }
       ]
