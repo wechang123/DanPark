@@ -10,23 +10,26 @@
 ## 기술 스택
 
 ### Frontend
-- **Framework**: React Native with Expo Router
-- **Language**: TypeScript
-- **Key Libraries**:
-  - React Navigation (화면 라우팅)
-  - Reanimated & Gesture Handler (애니메이션)
-  - Bottom Sheet (UI)
-  - React Native Maps (지도)
+
+-   **Framework**: React Native with Expo Router
+-   **Language**: TypeScript
+-   **Key Libraries**:
+    -   React Navigation (화면 라우팅)
+    -   Reanimated & Gesture Handler (애니메이션)
+    -   Bottom Sheet (UI)
+    -   React Native Maps (지도)
 
 ### Backend
-- **Framework**: Spring Boot
-- **Language**: Java 17
-- **Database**: MySQL
+
+-   **Framework**: Spring Boot
+-   **Language**: Java 17
+-   **Database**: MySQL
 
 ### AI/ML
-- **Model**: YOLOv5
-- **Framework**: PyTorch
-- **Task**: 차량 감지 및 주차 공간 탐지
+
+-   **Model**: YOLOv5
+-   **Framework**: PyTorch
+-   **Task**: 차량 감지 및 주차 공간 탐지
 
 ## 프로젝트 구조
 
@@ -54,7 +57,61 @@ git clone https://github.com/wechang123/DanPark.git
 cd DanPark
 ```
 
-### 2. Frontend 설정
+### 2. iOS 시뮬레이터 설정 및 실행 방법 (JunWon)
+
+#### 필수 요구사항
+
+1. **Xcode 설치**
+
+    - Mac App Store에서 최신 버전의 Xcode 설치
+    - Command Line Tools 설치: `xcode-select --install`
+
+2. **iOS 시뮬레이터 설치**
+    - Xcode > Preferences > Components에서 원하는 iOS 버전의 시뮬레이터 설치
+
+#### 프로젝트 설정
+
+```bash
+# 1. 프로젝트 의존성 설치
+npm install
+
+# 2. iOS 관련 의존성 설치
+cd ios
+pod install
+cd ..
+
+# 3. 캐시 초기화와 함께 Expo 개발 서버 실행
+npx expo start --clear
+```
+
+#### 시뮬레이터 실행 방법
+
+1. Expo 개발 서버가 실행되면 터미널에서 `i` 키를 눌러 iOS 시뮬레이터 실행
+2. 또는 `npx expo run:ios` 명령어로 직접 실행
+
+#### 주요 특징과 장점
+
+1. **네이티브 기능 테스트**: 카메라, 위치 서비스 등 실제 디바이스 기능 테스트 가능
+2. **디버깅 용이성**:
+    - 실시간 콘솔 로그 확인
+    - React Native Debugger 연동
+    - 네트워크 요청 모니터링
+3. **빠른 개발 환경**:
+    - Hot Reload 지원
+    - 실시간 코드 수정 반영
+4. **다양한 디바이스 테스트**:
+    - 여러 iOS 버전 테스트 가능
+    - 다양한 iPhone/iPad 모델 시뮬레이션
+
+#### 문제 해결
+
+1. **캐시 초기화**: `--clear` 옵션으로 이전 빌드 캐시를 완전히 삭제하고 새로 시작
+2. **의존성 문제 해결**: 패키지 충돌이나 캐시 관련 문제를 해결하는데 효과적
+3. **메모리 최적화**: 불필요한 캐시를 제거하여 더 깨끗한 개발 환경 제공
+4. **디버깅 용이성**: 캐시로 인한 오류를 배제할 수 있어 문제 해결이 쉬움
+5. **크로스 플랫폼 지원**: iOS, Android, Web 등 모든 플랫폼에서 사용 가능
+
+### 3. Frontend 설정
 
 ```bash
 # Node.js 패키지 설치
@@ -70,7 +127,7 @@ npm run android
 npm start
 ```
 
-### 3. Backend 설정
+### 4. Backend 설정
 
 ```bash
 cd BACKEND
@@ -83,7 +140,7 @@ cd BACKEND
 
 **요구사항**: Java 17 이상
 
-### 4. YOLO 모델 설정
+### 5. YOLO 모델 설정
 
 ```bash
 cd yolo
@@ -130,10 +187,10 @@ git push origin feature/기능명
 
 ### 브랜치 명명 규칙
 
-- `feature/기능명`: 새로운 기능 개발
-- `fix/버그명`: 버그 수정
-- `refactor/설명`: 코드 리팩토링
-- `docs/설명`: 문서 작업
+-   `feature/기능명`: 새로운 기능 개발
+-   `fix/버그명`: 버그 수정
+-   `refactor/설명`: 코드 리팩토링
+-   `docs/설명`: 문서 작업
 
 ### 커밋 메시지 규칙
 
@@ -148,6 +205,7 @@ test: 테스트 코드
 ```
 
 예시:
+
 ```bash
 git commit -m "feat: 주차장 즐겨찾기 기능 추가"
 git commit -m "fix: 지도 마커 표시 오류 수정"
@@ -233,9 +291,9 @@ python val.py --weights weights/best.pt --data data.yaml
 
 필요한 환경 변수는 각 서브 프로젝트의 `.env` 파일에 설정:
 
-- Frontend: `.env` (프로젝트 루트)
-- Backend: `BACKEND/src/main/resources/application.properties`
-- YOLO: 필요시 `yolo/.env`
+-   Frontend: `.env` (프로젝트 루트)
+-   Backend: `BACKEND/src/main/resources/application.properties`
+-   YOLO: 필요시 `yolo/.env`
 
 **주의**: `.env` 파일은 `.gitignore`에 포함되어 있으므로 커밋되지 않습니다.
 
